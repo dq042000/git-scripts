@@ -62,4 +62,4 @@ git ac "你的 commit 訊息"
 ```shell
 [alias]
    acp = "!~/git-scripts/acp.sh"
-```
+   ac = "!~/git-scripts/ac.sh"
