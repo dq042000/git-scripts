@@ -48,3 +48,18 @@ git acp all "你的 commit 訊息"
 [alias]
    acp = "!~/git-scripts/acp.sh"
 ```
+
+## ac.sh
+
+### 使用方式：
+
+#### 只 commit
+
+```shell
+git ac "你的 commit 訊息"
+```
+
+功能：
+
+> git add --all  
+> git commit -m "你的 commit 訊息"  
