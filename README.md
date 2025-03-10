@@ -42,13 +42,6 @@ git acp all "你的 commit 訊息"
 > git push -u origin-gitlab 當前分支 
 > git push -u origin 當前分支
 
-## 在 ~/.gitconfig 中加入以下設定：
-
-```shell
-[alias]
-   acp = "!~/git-scripts/acp.sh"
-```
-
 ## ac.sh
 
 ### 使用方式：
@@ -63,3 +56,10 @@ git ac "你的 commit 訊息"
 
 > git add --all  
 > git commit -m "你的 commit 訊息"  
+
+## 在 ~/.gitconfig 中加入以下設定：
+
+```shell
+[alias]
+   acp = "!~/git-scripts/acp.sh"
+```
