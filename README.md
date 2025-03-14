@@ -57,9 +57,39 @@ git ac "你的 commit 訊息"
 > git add --all  
 > git commit -m "你的 commit 訊息"  
 
+## pl.sh
+
+### 使用方式：
+
+#### 拉取最新的變更
+
+```shell
+git pl
+```
+
+功能：
+
+> git pull `當前遠端儲存庫名稱` `當前分支名稱`
+
+## ph.sh
+
+### 使用方式：
+
+#### 推送本地變更
+
+```shell
+git ph
+```
+
+功能：
+
+> git push `當前遠端儲存庫名稱` `當前分支名稱`
+
 ## 在 ~/.gitconfig 中加入以下設定：
 
 ```shell
 [alias]
    acp = "!~/git-scripts/acp.sh"
    ac = "!~/git-scripts/ac.sh"
+   pl = "!~/git-scripts/pl.sh"
+   ph = "!~/git-scripts/ph.sh"
