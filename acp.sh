@@ -5,10 +5,11 @@ current_branch=$(git rev-parse --abbrev-ref HEAD)
 
 commit_and_push() {
     if [ -z "$1" ]; then
-        git add --all && git commit && git push -u "$2" "$current_branch"
+        git add --all && git commit
     else
-        git add --all && git commit -m "$1" && git push -u "$2" "$current_branch"
+        git add --all && git commit -m "$1"
     fi
+    git push -u "$2" "$current_branch"
 }
 
 if [ "$1" = "gitlab" ]; then
