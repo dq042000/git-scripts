@@ -1,8 +1,7 @@
 #!/bin/bash
 
 if [ -z "$1" ]; then
-    echo "Commit message is required."
-    exit 1
+    git add --all && git commit
+else
+    git add --all && git commit -m "$1"
 fi
-
-git add --all && git commit -m "$1"
