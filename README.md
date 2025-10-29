@@ -114,6 +114,16 @@ git agc
 
 適合讓 Gemini CLI 根據變更自動產生 commit message，無需手動輸入。
 
+### 依賴需求
+
+若要使用 `agc` 指令，請先安裝 gemini cli。可使用下列指令安裝：
+
+```shell
+npm install -g @google/gemini-cli
+```
+
+或參考 [Gemini CLI 官方文件](https://github.com/GoogleCloudPlatform/gemini-cli) 取得更多安裝與設定資訊。
+
 ## pl.sh
 
 ### 使用方式
