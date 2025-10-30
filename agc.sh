@@ -12,7 +12,7 @@ else
 fi
 
 # 用新版 gemini CLI 生成訊息
-MESSAGE=$(echo "$DIFF" | gemini -m gemini-2.5-pro \
+MESSAGE=$(echo "$DIFF" | NODE_OPTIONS="--max-old-space-size=8192" gemini -m gemini-2.5-pro \
     "請根據以下 git diff，撰寫一個清晰的 commit message（使用繁體中文）。")
 
 echo ""

@@ -124,6 +124,16 @@ npm install -g @google/gemini-cli
 
 或參考 [Gemini CLI 官方文件](https://github.com/GoogleCloudPlatform/gemini-cli) 取得更多安裝與設定資訊。
 
+### 記憶體參數說明
+
+`agc.sh` 內部會設定下列環境變數來提升 Node.js 執行時的記憶體上限：
+
+```shell
+NODE_OPTIONS="--max-old-space-size=8192"
+```
+
+這樣可避免在大型專案或大量檔案時，gemini cli 執行時發生記憶體不足的問題。
+
 ## pl.sh
 
 ### 使用方式
