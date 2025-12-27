@@ -11,7 +11,7 @@ summary: 本指南介紹 git-scripts 專案的各個 shell 腳本用途、用法
 post_date: 2025-10-29
 ---
 
-## acp.sh
+## 1. acp.sh
 
 ### 使用方式
 
@@ -80,7 +80,7 @@ git acp all
   - git push -u origin-gitlab 當前分支
   - git push -u origin 當前分支
 
-## ac.sh
+## 2. ac.sh
 
 ### 使用方式
 
@@ -101,7 +101,7 @@ git ac
   - git add --all
   - git commit（進入互動式編輯）
 
-## agc.sh
+## 3. agc.sh
 
 ### 使用方式
 
@@ -134,7 +134,7 @@ NODE_OPTIONS="--max-old-space-size=8192"
 
 這樣可避免在大型專案或大量檔案時，gemini cli 執行時發生記憶體不足的問題。
 
-## pl.sh
+## 4. pl.sh
 
 ### 使用方式
 
@@ -144,7 +144,7 @@ git pl
 
 - git pull `當前遠端儲存庫名稱` `當前分支名稱`
 
-## ph.sh
+## 5. ph.sh
 
 ### 使用方式
 
@@ -154,7 +154,24 @@ git ph
 
 - git push `當前遠端儲存庫名稱` `當前分支名稱`
 
-## 設定 git alias
+## 6. st.sh
+### 使用方式
+
+```shell
+git st
+```
+
+- git status
+
+## 7. br.sh
+### 使用方式
+```shell
+git br
+```
+
+- git branch
+
+## 8. 設定 git alias
 
 請在 `~/.gitconfig` 中加入以下設定：
 
@@ -165,9 +182,11 @@ git ph
   agc = "!~/git-scripts/agc.sh"
   pl = "!~/git-scripts/pl.sh"
   ph = "!~/git-scripts/ph.sh"
+  st = "!~/git-scripts/st.sh"
+  br = "!~/git-scripts/br.sh"
 ```
 
-## 檔案權限設定
+## 10. 檔案權限設定
 
 請確保所有 shell 腳本都具備執行權限。可使用以下指令一次性設定：
 
