@@ -1,33 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Prompt for user name and email
+# 提示輸入 Git 使用者名稱與電子郵件
 read -rp "Git user.name: " name
 read -rp "Git user.email: " email
 
-# Set basic user info
+# 設定基本使用者資訊
 git config --global user.name "$name"
 git config --global user.email "$email"
 
-# Push new branches with upstream by default
+# 新分支推送時預設設定上游分支
 git config --global push.autoSetupRemote true
 
-# Default initial branch name
+# 預設的初始化分支名稱
 git config --global init.defaultBranch main
 
-# Use LF for line endings and avoid safecrlf warnings
+# 使用 LF 作為行尾並避免 safecrlf 警告
 git config --global core.autocrlf input
 git config --global core.safecrlf false
 
-# Display UTF-8 paths correctly (for Chinese)
+# 正確顯示 UTF-8 路徑（例如中文）
 git config --global core.quotepath false
 
-# Enable colored output in CLI
+# 在命令列中啟用顏色輸出
 git config --global color.diff auto
 git config --global color.status auto
 git config --global color.branch auto
 
-# Common aliases
+# 常用別名
 git config --global alias.ci commit
 git config --global alias.cm "commit --amend -C HEAD"
 git config --global alias.co checkout
@@ -42,14 +42,14 @@ git config --global alias.ll "log --pretty=format:'%h %ad | %s%d [%Cgreen%an%Cre
 git config --global alias.lg "log --graph --pretty=format:'%Cred%h%Creset %ad |%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset [%Cgreen%an%Creset]' --abbrev-commit --date=short"
 git config --global alias.alias "config --get-regexp ^alias\."
 
-# Helper to fetch .gitignore templates from gitignore.io
+# 從 gitignore.io 取得 .gitignore 範本的輔助別名
 git config --global alias.ignore '!gi() { curl -sL https://www.gitignore.io/api/$@ ;}; gi'
 
-# Add/commit/push helpers
+# 新增/提交/推送 的輔助別名
 git config --global alias.acp '!f() { git add . && if [ -n "$1" ]; then git commit -m "$1"; else git commit; fi && git push; }; f'
 git config --global alias.ac '!f() { git add . && if [ -n "$1" ]; then git commit -m "$1"; else git commit; fi; }; f'
 
-# Push all remotes
+# 推送所有遠端的別名
 git config --global alias.pushall '!git remote | xargs -L1 git push --all'
 
 git config --global alias.acpa '!f() { git add . && if [ -n "$1" ]; then git commit -m "$1"; else git commit; fi && git remote | xargs -L1 git push; }; f'
