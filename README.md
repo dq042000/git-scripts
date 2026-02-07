@@ -195,3 +195,56 @@ chmod +x ~/git-scripts/*.sh
 ```
 
 這樣才能直接執行這些腳本，並讓 git alias 正常運作。
+## Git config 初始化
+
+可使用本專案的 setup-git-config.sh 進行全域 git 設定初始化，會詢問 name 與 email，並套用下列設定：
+
+```shell
+# 設定使用者
+git config --global user.name  ${name}
+git config --global user.email  ${email}
+
+# 推送新分支時自動設定上游分支
+git config --global push.autoSetupRemote true
+
+# 設定預設分支名稱為 main
+git config --global init.defaultBranch main
+
+# 統一使用 LF 作為行尾字元
+git config --global core.autocrlf input
+git config --global core.safecrlf false
+
+# 為了能正確顯示 UTF-8 中文字
+git config --global core.quotepath false
+
+# 在命令列環境下自動標示顏色
+git config --global color.diff auto
+git config --global color.status auto
+git config --global color.branch auto
+
+# 常用的 Git Alias 命令
+git config --global alias.ci   commit
+git config --global alias.cm   "commit --amend -C HEAD"
+git config --global alias.co   checkout
+git config --global alias.st   status
+git config --global alias.sts  "status -s"
+git config --global alias.br   branch
+git config --global alias.re   remote
+git config --global alias.di   diff
+git config --global alias.lo   "log --oneline"
+git config --global alias.ls   "log --show-signature"
+git config --global alias.ll   "log --pretty=format:'%h %ad | %s%d [%Cgreen%an%Creset]' --graph --date=short"
+git config --global alias.lg   "log --graph --pretty=format:'%Cred%h%Creset %ad |%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset [%Cgreen%an%Creset]' --abbrev-commit --date=short"
+git config --global alias.alias "config --get-regexp ^alias\."
+git config --global alias.ignore '!gi() { curl -sL https://www.gitignore.io/api/\$@ ;}; gi'
+git config --global alias.acp '!f() { git add . && if [ -n "\$1" ]; then git commit -m "\$1"; else git commit; fi && git push; }; f'
+git config --global alias.ac '!f() { git add . && if [ -n "\$1" ]; then git commit -m "\$1"; else git commit; fi; }; f'
+git config --global alias.pushall '!git remote | xargs -L1 git push --all'
+git config --global alias.acpa '!f() { git add . && if [ -n "\$1" ]; then git commit -m "\$1"; else git commit; fi && git remote | xargs -L1 git push; }; f'
+```
+
+執行：
+
+```shell
+./setup-git-config.sh
+```
