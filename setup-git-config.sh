@@ -43,7 +43,7 @@ git config --global alias.lg "log --graph --pretty=format:'%Cred%h%Creset %ad |%
 git config --global alias.alias "config --get-regexp ^alias\."
 
 # 從 gitignore.io 取得 .gitignore 範本的輔助別名
-git config --global alias.ignore '!gi() { curl -sL https://www.gitignore.io/api/$@ > .gitignore && echo "\n# Custom rules\n.history" >> .gitignore; }; gi'
+git config --global alias.ignore '!f() { curl -sL "https://www.gitignore.io/api/$*" > .gitignore && echo -e "\n# Custom rules\n.history" >> .gitignore; }; f'
 
 # 新增/提交/推送 的輔助別名
 git config --global alias.acp '!f() { git add . && if [ -n "$1" ]; then git commit -m "$1"; else git commit; fi && git push; }; f'
