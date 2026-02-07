@@ -48,10 +48,10 @@ git config --global alias.ignore '!f() { curl -sL "https://www.gitignore.io/api/
 # 新增/提交/推送 的輔助別名
 git config --global alias.acp '!f() { git add . && if [ -n "$1" ]; then git commit -m "$1"; else git commit; fi && git push; }; f'
 git config --global alias.ac '!f() { git add . && if [ -n "$1" ]; then git commit -m "$1"; else git commit; fi; }; f'
+git config --global alias.acpa '!f() { git add . && if [ -n "$1" ]; then git commit -m "$1"; else git commit; fi && git remote | xargs -L1 git push; }; f'
 
 # 推送所有遠端的別名
 git config --global alias.pushall '!git remote | xargs -L1 git push --all'
 
-git config --global alias.acpa '!f() { git add . && if [ -n "$1" ]; then git commit -m "$1"; else git commit; fi && git remote | xargs -L1 git push; }; f'
 
 printf "Git configuration updated.\n"
