@@ -19,6 +19,11 @@ git config --global init.defaultBranch main
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 git config --global core.hooksPath "$SCRIPT_DIR/hooks"
 
+# 設定 hooks 目錄中的所有檔案為可執行
+if [ -d "$SCRIPT_DIR/hooks" ]; then
+    chmod +x "$SCRIPT_DIR/hooks"/*
+fi
+
 # 使用 LF 作為行尾並避免 safecrlf 警告
 git config --global core.autocrlf input
 git config --global core.safecrlf false
@@ -60,3 +65,4 @@ git config --global alias.pushall '!git remote | xargs -L1 git push --all'
 
 printf "Git configuration updated.\n"
 printf "Git hooks path set to: %s/hooks\n" "$SCRIPT_DIR"
+printf "All hooks have been set as executable.\n"
