@@ -102,6 +102,9 @@ git config --global alias.acpa '!f() { git add . && if [ -n "$1" ]; then git com
 # 推送所有遠端的別名
 git config --global alias.pushall '!git remote | xargs -L1 git push --all'
 
+# 拉取所有遠端的別名（針對當前分支）
+git config --global alias.pullall '!f() { branch=$(git rev-parse --abbrev-ref HEAD); git remote | xargs -L1 -I r sh -c "git pull r $branch"; }; f'
+
 printf "Git configuration updated.\n"
 
 # 詢問是否要設定 Git Hooks
