@@ -15,6 +15,10 @@ git config --global push.autoSetupRemote true
 # 預設的初始化分支名稱
 git config --global init.defaultBranch main
 
+# 設定全域 Git Hooks 路徑
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+git config --global core.hooksPath "$SCRIPT_DIR/hooks"
+
 # 使用 LF 作為行尾並避免 safecrlf 警告
 git config --global core.autocrlf input
 git config --global core.safecrlf false
@@ -55,3 +59,4 @@ git config --global alias.pushall '!git remote | xargs -L1 git push --all'
 
 
 printf "Git configuration updated.\n"
+printf "Git hooks path set to: %s/hooks\n" "$SCRIPT_DIR"

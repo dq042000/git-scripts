@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo "🚀 正在透過 GitHub Copilot 進行資深開發者等級的自動審查..."
+
+# 執行 Copilot 審查
+gh copilot -p "請扮演資深開發人員，針對目前暫存（staged）的程式碼變更進行 Code Review。請涵蓋：1. 找出潛在 Bug。2. 提供效能優化建議。3. 建議更乾淨的程式碼結構或命名方式。4. 檢查是否有安全風險。請使用台灣繁體中文回答，內容要精簡且具體。" --allow-tool 'shell(git)'
+
+echo ""
+echo "------------------------------------------------"
+read -p "看完 Review 了嗎？要繼續 Push 嗎？(y/n): " confirm
+
+if [[ "$confirm" != "y" ]]; then
+    echo "❌ Push 已取消，請修正後再嘗試。"
+    exit 1
+fi
+
+exit 0
