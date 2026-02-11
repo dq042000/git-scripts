@@ -1,6 +1,55 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# 提前宣告腳本目錄，避免未宣告錯誤
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# 驗證 hooks 腳本是否安全
+verify_hooks_script() {
+    local hooks_script="$SCRIPT_DIR/setup-hooks.sh"
+    
+    # 檢查腳本是否存在
+    if [ ! -f "$hooks_script" ]; then
+        echo "❌ 找不到 hooks 設定腳本: $hooks_script"
+        return 1
+    fi
+    
+    # 檢查腳本是否可執行
+    if [ ! -x "$hooks_script" ]; then
+        echo "❌ hooks 設定腳本無執行權限: $hooks_script"
+        return 1
+    fi
+    
+    # 檢查腳本擁有者是否為當前用戶
+    local current_user
+    current_user=$(id -u)
+    local script_owner
+    script_owner=$(stat -c "%u" "$hooks_script" 2>/dev/null)
+    
+    if [ "$script_owner" != "$current_user" ]; then
+        echo "⚠️  安全警告: hooks 腳本不屬於當前用戶"
+        echo "    腳本: $hooks_script"
+        echo "    擁有者 UID: $script_owner"
+        echo "    當前用戶 UID: $current_user"
+        return 1
+    fi
+    
+    # 檢查腳本是否在預期位置
+    local real_script_dir
+    real_script_dir=$(realpath "$SCRIPT_DIR" 2>/dev/null || echo "$SCRIPT_DIR")
+    local real_hooks_script
+    real_hooks_script=$(realpath "$hooks_script" 2>/dev/null || echo "$hooks_script")
+    
+    if [[ "$real_hooks_script" != "$real_script_dir/setup-hooks.sh" ]]; then
+        echo "⚠️  安全警告: hooks 腳本路徑異常"
+        echo "    期望: $real_script_dir/setup-hooks.sh"
+        echo "    實際: $real_hooks_script"
+        return 1
+    fi
+    
+    return 0
+}
+
 # 提示輸入 Git 使用者名稱與電子郵件
 read -rp "Git user.name: " name
 read -rp "Git user.email: " email
@@ -14,15 +63,6 @@ git config --global push.autoSetupRemote true
 
 # 預設的初始化分支名稱
 git config --global init.defaultBranch main
-
-# # 設定全域 Git Hooks 路徑
-# SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# git config --global core.hooksPath "$SCRIPT_DIR/hooks"
-
-# # 設定 hooks 目錄中的所有檔案為可執行
-# if [ -d "$SCRIPT_DIR/hooks" ]; then
-#     find "$SCRIPT_DIR/hooks" -type f -exec chmod +x {} \;
-# fi
 
 # 使用 LF 作為行尾並避免 safecrlf 警告
 git config --global core.autocrlf input
@@ -62,7 +102,24 @@ git config --global alias.acpa '!f() { git add . && if [ -n "$1" ]; then git com
 # 推送所有遠端的別名
 git config --global alias.pushall '!git remote | xargs -L1 git push --all'
 
-
 printf "Git configuration updated.\n"
-printf "Git hooks path set to: %s/hooks\n" "$SCRIPT_DIR"
-printf "All hooks have been set as executable.\n"
+
+# 詢問是否要設定 Git Hooks
+echo ""
+echo -n "是否要設定 Git Hooks？(Y/n): "
+read -r setup_hooks
+
+if [[ ! $setup_hooks =~ ^[Nn]$ ]]; then
+    # 驗證 hooks 腳本安全性
+    if verify_hooks_script; then
+        echo ""
+        echo "執行 hooks 設定腳本..."
+        # 使用安全的方式執行腳本
+        bash "$SCRIPT_DIR/setup-hooks.sh"
+    else
+        echo "❌ hooks 腳本安全驗證失敗，跳過設定"
+        exit 1
+    fi
+else
+    echo "跳過 Git Hooks 設定"
+fi

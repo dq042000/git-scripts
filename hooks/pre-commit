@@ -1,0 +1,165 @@
+#!/bin/bash
+
+# 用於 Copilot 程式碼審查的 pre-commit 鉤子
+# 此腳本會在 commit 前審查已暫存的變更
+
+# 設定參數
+MAX_DIFF_LINES=500
+MAX_FILES=20
+REVIEW_PROMPT="請扮演資深開發人員，針對以下程式碼變更進行 Code Review。請涵蓋：1. 找出潛在 Bug。2. 提供效能優化建議。3. 建議更乾淨的程式碼結構或命名方式。4. 檢查是否有安全風險。請使用台灣繁體中文回答，內容要精簡且具體。"
+SENSITIVE_PATTERNS="password|passwd|secret|key|token|api[_-]?key|private[_-]?key|secret[_-]?key|access[_-]?token"
+
+# 退出函數
+exit_with_message() {
+    echo "$1"
+    exit "${2:-0}"
+}
+
+# 統一的用戶確認函數
+ask_user_confirmation() {
+    local prompt="$1"
+    local default="${2:-N}"  # 預設值：Y 或 N
+    local user_input
+    
+    if [[ $default == "Y" ]]; then
+        echo -n "$prompt (Y/n): "
+    else
+        echo -n "$prompt (y/N): "
+    fi
+    
+    read -r user_input < /dev/tty
+    
+    if [[ $default == "Y" ]]; then
+        [[ ! $user_input =~ ^[Nn]$ ]]
+    else
+        [[ $user_input =~ ^[Yy]$ ]]
+    fi
+}
+
+# 敏感資訊檢查函數
+check_sensitive_data() {
+    local diff_content="$1"
+    
+    if echo "$diff_content" | grep -qiE "\+.*($SENSITIVE_PATTERNS)"; then
+        echo "⚠️  偵測到可能包含敏感資訊，請確認後再繼續"
+        echo "    警告：程式碼審查會將內容傳送至 GitHub Copilot"
+        if ! ask_user_confirmation "確定要繼續審查？" "N"; then
+            exit_with_message "❌ 使用者取消審查" 1
+        fi
+    fi
+}
+
+# Fail-safe 跳脫機制
+emergency_exit() {
+    echo ""
+    echo "🚨 緊急跳脫：按 Ctrl+C 後輸入 'skip' 可強制跳過審查"
+    if ask_user_confirmation "強制跳過所有檢查並繼續 commit？" "N"; then
+        exit_with_message "⚠️  已強制跳過審查" 0
+    fi
+}
+
+# 設定 Ctrl+C 處理
+trap emergency_exit INT
+
+# 檢查是否有已暫存的檔案需要審查
+if git diff --cached --quiet; then
+    exit_with_message "沒有已暫存的變更需要審查。"
+fi
+
+# 檢查是否有安裝 copilot
+if ! command -v copilot &> /dev/null; then
+    echo "⚠️  未偵測到 GitHub Copilot CLI"
+    if ask_user_confirmation "是否要跳過審查並繼續 commit？" "Y"; then
+        exit_with_message "✅ 跳過審查，繼續 commit"
+    else
+        exit_with_message "❌ Commit 已取消" 1
+    fi
+fi
+
+echo "正在審查暫存的程式碼變更..."
+echo "========================================"
+
+# 詢問是否要進行審查
+if ! ask_user_confirmation "是否要執行 Copilot 程式碼審查？" "Y"; then
+    exit_with_message "✅ 跳過審查，直接 commit"
+fi
+
+# 先檢查變更的檔案數量和類型
+CHANGED_FILES=$(git diff --cached --name-only)
+FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l)
+
+echo "檢測到 $FILE_COUNT 個變更檔案"
+
+# 過濾程式碼檔案
+CODE_FILES=$(echo "$CHANGED_FILES" | grep -E '\.(js|ts|jsx|tsx|py|go|java|cpp|c|h|php|rb|rs|sh|bash|yml|yaml|json|xml)$' || true)
+
+if [ -z "$CODE_FILES" ]; then
+    echo "⚠️  未檢測到程式碼檔案變更"
+    if ask_user_confirmation "是否仍要進行審查？" "N"; then
+        STAGED_DIFF=$(git diff --cached)
+    else
+        exit_with_message "✅ 跳過審查，繼續 commit"
+    fi
+else
+    echo "檢測到以下程式碼檔案："
+    echo "$CODE_FILES"
+    STAGED_DIFF=$(git diff --cached -- $CODE_FILES)
+fi
+
+# 檢查是否有實際內容需要審查
+if [ -z "$STAGED_DIFF" ]; then
+    exit_with_message "沒有檢測到程式碼變更內容。"
+fi
+
+# 計算變更行數
+DIFF_LINES=$(echo "$STAGED_DIFF" | wc -l)
+echo "程式碼變更共 $DIFF_LINES 行"
+
+# 檢查檔案數量限制
+if [ "$FILE_COUNT" -gt "$MAX_FILES" ]; then
+    echo "⚠️  變更檔案數量過多 ($FILE_COUNT > $MAX_FILES)"
+    if ! ask_user_confirmation "是否仍要進行審查？" "N"; then
+        exit_with_message "✅ 跳過審查，繼續 commit"
+    fi
+fi
+
+# 檢查 diff 大小是否超過限制
+if [ "$DIFF_LINES" -gt "$MAX_DIFF_LINES" ]; then
+    echo "⚠️  變更內容過大 ($DIFF_LINES 行 > $MAX_DIFF_LINES 行限制)"
+    if ! ask_user_confirmation "是否仍要進行審查？" "N"; then
+        exit_with_message "✅ 跳過審查，繼續 commit"
+    fi
+fi
+
+# 檢查敏感資訊
+check_sensitive_data "$STAGED_DIFF"
+
+echo "正在進行程式碼審查..."
+
+# 執行 copilot 審查
+copilot --prompt "$REVIEW_PROMPT
+
+以下是程式碼變更：
+
+\`\`\`diff
+$STAGED_DIFF
+\`\`\`" --model gpt-4.1 --yolo
+
+# 檢查 copilot 指令是否執行成功
+if [ $? -ne 0 ]; then
+    echo "❌ Copilot 審查失敗，請檢查網路連線或命令設定"
+    if ask_user_confirmation "審查失敗，是否要跳過審查並繼續 commit？" "N"; then
+        exit_with_message "✅ 跳過審查，繼續 commit"
+    else
+        exit_with_message "❌ Commit 已取消" 1
+    fi
+fi
+
+echo ""
+echo "========================================"
+
+if ask_user_confirmation "是否要繼續 commit？" "N"; then
+    exit_with_message "✅ 繼續 commit..."
+else
+    exit_with_message "❌ Commit 已取消" 1
+fi
