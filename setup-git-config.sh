@@ -15,14 +15,14 @@ git config --global push.autoSetupRemote true
 # 預設的初始化分支名稱
 git config --global init.defaultBranch main
 
-# 設定全域 Git Hooks 路徑
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-git config --global core.hooksPath "$SCRIPT_DIR/hooks"
+# # 設定全域 Git Hooks 路徑
+# SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# git config --global core.hooksPath "$SCRIPT_DIR/hooks"
 
-# 設定 hooks 目錄中的所有檔案為可執行
-if [ -d "$SCRIPT_DIR/hooks" ]; then
-    chmod +x "$SCRIPT_DIR/hooks"/*
-fi
+# # 設定 hooks 目錄中的所有檔案為可執行
+# if [ -d "$SCRIPT_DIR/hooks" ]; then
+#     find "$SCRIPT_DIR/hooks" -type f -exec chmod +x {} \;
+# fi
 
 # 使用 LF 作為行尾並避免 safecrlf 警告
 git config --global core.autocrlf input
