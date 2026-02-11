@@ -75,7 +75,7 @@ pre-commit, post-commit, pre-push, post-receive, pre-receive, commit-msg, pre-re
 - **緊急跳脫**：按 Ctrl+C 可強制跳過所有檢查
 
 #### 使用前提
-需要安裝 [GitHub Copilot CLI](https://githubnext.com/projects/copilot-cli/)
+需要安裝 [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/install-copilot-cli#installing-or-updating-copilot-cli)
 
 #### 審查內容
 1. 找出潛在 Bug
