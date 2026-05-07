@@ -42,7 +42,22 @@ Git Hooks 設定與管理工具，提供安全的 hooks 安裝、權限檢查與
 - **行尾設定**：core.autocrlf = input、core.safecrlf = false（統一使用 LF 行尾）
 - **編碼設定**：core.quotepath = false（正確顯示 UTF-8 路徑，例如中文檔名）
 - **顏色設定**：color.diff/status/branch = auto（在命令列啟用顏色顯示）
-- **常用別名**：ci, cm, co, st, sts, br, re, di, lo, ls, ll, lg, alias, ignore, acp, ac, pushall, acpa
+- **常用別名**：ci, cm, co, st, sts, br, re, di, lo, ls, ll, lg, alias, ignore, acp, ac, acpa, pushall, pullall
+- **AI 輔助別名**：aic, aicp, aicpa（需安裝 Claude Code）
+
+#### AI 輔助 Commit 別名
+
+需要先安裝 [Claude Code](https://claude.ai/code) 並設定好 `/commit` 自訂指令。
+
+| 別名 | 說明 |
+|------|------|
+| `git aic` | 以 AI 分析 staged changes 並自動 commit |
+| `git aicp` | 同上，commit 後 `git push` |
+| `git aicpa` | 同上，commit 後對所有 remote 各 push 一次 |
+
+三個別名都會在沒有 staged changes 時提前中止，不會產生空 commit。
+
+---
 
 ### setup-hooks.sh
 

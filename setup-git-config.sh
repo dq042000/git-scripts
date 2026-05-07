@@ -50,9 +50,15 @@ verify_hooks_script() {
     return 0
 }
 
-# 提示輸入 Git 使用者名稱與電子郵件
-read -rp "Git user.name: " name
-read -rp "Git user.email: " email
+# 提示輸入 Git 使用者名稱與電子郵件（留空保留現有值）
+current_name=$(git config --global user.name 2>/dev/null || echo "")
+current_email=$(git config --global user.email 2>/dev/null || echo "")
+
+read -rp "Git user.name [${current_name}]: " name
+read -rp "Git user.email [${current_email}]: " email
+
+name="${name:-$current_name}"
+email="${email:-$current_email}"
 
 # 設定基本使用者資訊
 git config --global user.name "$name"
@@ -104,6 +110,11 @@ git config --global alias.pushall '!git remote | xargs -L1 git push --all'
 
 # 拉取所有遠端的別名（針對當前分支）
 git config --global alias.pullall '!f() { branch=$(git rev-parse --abbrev-ref HEAD); git remote | xargs -L1 -I r sh -c "git pull r $branch"; }; f'
+
+# AI 輔助 commit 的別名（使用 Claude Code /commit 指令）
+git config --global alias.aic '!f() { git add . && tmpfile=$(mktemp); if claude --allowedTools "Bash(git *)" -p "/commit" > "$tmpfile"; then git commit -F "$tmpfile"; else cat "$tmpfile"; fi; rm -f "$tmpfile"; }; f'
+git config --global alias.aicp '!f() { git add . && tmpfile=$(mktemp); if claude --allowedTools "Bash(git *)" -p "/commit" > "$tmpfile"; then git commit -F "$tmpfile" && git push; else cat "$tmpfile"; fi; rm -f "$tmpfile"; }; f'
+git config --global alias.aicpa '!f() { git add . && tmpfile=$(mktemp); if claude --allowedTools "Bash(git *)" -p "/commit" > "$tmpfile"; then git commit -F "$tmpfile" && git remote | xargs -L1 git push; else cat "$tmpfile"; fi; rm -f "$tmpfile"; }; f'
 
 printf "Git configuration updated.\n"
 
