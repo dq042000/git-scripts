@@ -109,7 +109,7 @@ git config --global alias.acpa '!f() { git add . && if [ -n "$1" ]; then git com
 git config --global alias.pushall '!git remote | xargs -L1 git push --all'
 
 # 拉取所有遠端的別名（針對當前分支）
-git config --global alias.pullall '!f() { branch=$(git rev-parse --abbrev-ref HEAD); git remote | xargs -L1 -I r sh -c "git pull r $branch"; }; f'
+git config --global alias.pullall '!f() { branch=$(git rev-parse --abbrev-ref HEAD); git remote | xargs -I r sh -c "git pull r $branch"; }; f'
 
 # AI 輔助 commit 的別名（使用 Claude Code /commit 指令）
 git config --global alias.aic '!f() { git add . && tmpfile=$(mktemp); if claude --allowedTools "Bash(git *)" -p "/commit" > "$tmpfile"; then git commit -F "$tmpfile"; else cat "$tmpfile"; fi; rm -f "$tmpfile"; }; f'
